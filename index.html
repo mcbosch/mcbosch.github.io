@@ -1,11 +1,82 @@
-<html> <!--We put this to beggin a page/enviorment-->>
+<!DOCTYPE html>
+<html lang="en">
 
-    <head> <!--Here goes the metadata that won't be visible-->
-        <title>My First Web Page</title> 
+    <head>
+        <meta charset="UTF-8">
+        <meta name="autor" content="Melcion CIudad">
+        <meta name="description" content="This page are my notes on html"> 
+        <title>Mi primera página web</title> 
+        <link rel="icon" href="grafica_toro.png" type="image/x-icon">
+        <link rel="stylesheet" href="main.css" type="text/css">
     </head> 
 
-    <body> <!--Here we have the visible things of our page-->
-        <h1> Here we write a Header of the page, it must be one  for page</h1> 
-        <p>This is a paragraph, for my first web page!</p> 
+    <body>
+        <h1>Head</h1>
+        <hr> 
+        &lt;&lt;&lt; &copy;Melcion &gt;&gt;&gt;
+        <hr>
+        <!-- We create a navigation area to link sections -->
+        <nav>
+            <ul>
+                <li>
+                    <a href="#lists">Lists</a>
+                </li>
+                <li>
+                    <a href="#formats">Text Format</a>
+                </li>
+                <li>
+                    <a href="#Links">Links</a>
+                </li>
+            </ul>
+        </nav>
+    <section id="lists">
+        <h2>Lists</h2>
+        <p>We have 3 important types of lists, we are going to take a look through the 3 types. I can do a list with breaks &lt; br &gt;:
+            <br>&nbsp;&nbsp;&nbsp;First item
+            <br>&nbsp;&nbsp;&nbsp;Second item
+            <br>&nbsp;&nbsp;&nbsp;Third item
+        <br>But this is not a list... we should use list items in a ordered list:&lt;ol&gt; &lt;li&gt;:</p>
+        <ol>
+            <li>... First item </li>
+            <li>... Second item</li>
+            <li>... Third item </li>
+        </ol>
+        <p>So we have seen how to make an ordered list, to make a unordered list we write ul instead of ol:</p>
+        <ul>
+            <li>... item</li>
+            <li>... item</li>
+            <li>... item</li>
+        </ul>
+
+        <p>If we want to add extra space betweem items we write each item in a paragraph enviorment. Finally we have the description list, we can expect how to create this list.</p>
+        <dl>
+            <dt>Concept 1</dt>
+            <dd>...description details...</dd>
+
+            <dt>Concept2</dt>
+            <dd>...description details...</dd>
+        </dl>
+    </section>
+    <hr>
+    <section id="formats">
+    <h2>Formats</h2>
+
+    <p>We can change the format of the text, for example we can write in <strong>bold</strong> (strong), <em>cursive</em> (em) or...</p>
+    
+    </section>
+    
+    <hr>
+    <section id="Links">
+    <h2>Links and hypertext</h2>
+    
+    <p>
+        Hypertext is the <strong>ht</strong> in <strong>html</strong>, meaning that is very important. How we link pages each other? For example lets add a link to an abrebation: <abbr title="GirHub profile"><a href="https://github.com/mcbosch">GitP</a></abbr>. <br>
+        We use &lt; a &gt; (adress). As we can see it turns into a purple color, unvisible... To change the color we can... <br>
+
+        We can also link to pages that are in the same folder. For example if you want to go to my <a href="about.html">about page</a>. 
+    </p>
+    </section>
     </body>
-</html> <!--We put this to end a page/enviorment-->
+
+</html> 
+<!--We put this to end a page/enviorment-->

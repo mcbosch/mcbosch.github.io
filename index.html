@@ -1,82 +1,70 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>blog — tu nombre</title>
+    <meta name="description" content="Pensamientos y proyectos personales.">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="autor" content="Melcion CIudad">
-        <meta name="description" content="This page are my notes on html"> 
-        <title>Mi primera página web</title> 
-        <link rel="icon" href="grafica_toro.png" type="image/x-icon">
-        <link rel="stylesheet" href="main.css" type="text/css">
-    </head> 
-
-    <body>
-        <h1>Head</h1>
-        <hr> 
-        &lt;&lt;&lt; &copy;Melcion &gt;&gt;&gt;
-        <hr>
-        <!-- We create a navigation area to link sections -->
-        <nav>
-            <ul>
-                <li>
-                    <a href="#lists">Lists</a>
-                </li>
-                <li>
-                    <a href="#formats">Text Format</a>
-                </li>
-                <li>
-                    <a href="#Links">Links</a>
-                </li>
-            </ul>
-        </nav>
-    <section id="lists">
-        <h2>Lists</h2>
-        <p>We have 3 important types of lists, we are going to take a look through the 3 types. I can do a list with breaks &lt; br &gt;:
-            <br>&nbsp;&nbsp;&nbsp;First item
-            <br>&nbsp;&nbsp;&nbsp;Second item
-            <br>&nbsp;&nbsp;&nbsp;Third item
-        <br>But this is not a list... we should use list items in a ordered list:&lt;ol&gt; &lt;li&gt;:</p>
-        <ol>
-            <li>... First item </li>
-            <li>... Second item</li>
-            <li>... Third item </li>
-        </ol>
-        <p>So we have seen how to make an ordered list, to make a unordered list we write ul instead of ol:</p>
-        <ul>
-            <li>... item</li>
-            <li>... item</li>
-            <li>... item</li>
+<header class="site-header">
+    <nav class="site-nav">
+        <a href="/" class="site-title">tu nombre</a>
+        <ul class="nav-links">
+            <li><a href="/">blog</a></li>
+            <li><a href="/about.html">sobre mí</a></li>
         </ul>
+    </nav>
+</header>
 
-        <p>If we want to add extra space betweem items we write each item in a paragraph enviorment. Finally we have the description list, we can expect how to create this list.</p>
-        <dl>
-            <dt>Concept 1</dt>
-            <dd>...description details...</dd>
+<hr>
 
-            <dt>Concept2</dt>
-            <dd>...description details...</dd>
-        </dl>
-    </section>
-    <hr>
-    <section id="formats">
-    <h2>Formats</h2>
+<main class="container">
 
-    <p>We can change the format of the text, for example we can write in <strong>bold</strong> (strong), <em>cursive</em> (em) or...</p>
-    
-    </section>
-    
-    <hr>
-    <section id="Links">
-    <h2>Links and hypertext</h2>
-    
-    <p>
-        Hypertext is the <strong>ht</strong> in <strong>html</strong>, meaning that is very important. How we link pages each other? For example lets add a link to an abrebation: <abbr title="GirHub profile"><a href="https://github.com/mcbosch">GitP</a></abbr>. <br>
-        We use &lt; a &gt; (adress). As we can see it turns into a purple color, unvisible... To change the color we can... <br>
+    <p class="blog-subtitle">pensamientos, proyectos y notas sueltas</p>
 
-        We can also link to pages that are in the same folder. For example if you want to go to my <a href="about.html">about page</a>. 
-    </p>
-    </section>
-    </body>
+    <ul class="post-list">
 
-</html> 
-<!--We put this to end a page/enviorment-->
+        <!-- ====== ENTRADA DE EJEMPLO 2 ====== -->
+        <li class="post-item">
+            <a href="posts/sobre-espacios-de-hilbert.html" class="post-link">
+                <h2 class="post-title">Notas sobre espacios de Hilbert</h2>
+                <p class="post-meta">
+                    14 feb 2026
+                    <span class="tag">matemáticas</span>
+                    <span class="tag">notas</span>
+                </p>
+                <p class="post-excerpt">
+                    Repaso de las propiedades fundamentales de los espacios de Hilbert
+                    y su relación con la mecánica cuántica. Con ejemplos y demostraciones.
+                </p>
+            </a>
+        </li>
+
+        <!-- ====== ENTRADA DE EJEMPLO 1 ====== -->
+        <li class="post-item">
+            <a href="posts/hola-mundo.html" class="post-link">
+                <h2 class="post-title">Hola mundo</h2>
+                <p class="post-meta">
+                    14 feb 2026
+                    <span class="tag">meta</span>
+                </p>
+                <p class="post-excerpt">
+                    Primera entrada del blog. Por qué decidí crear este espacio
+                    y qué espero compartir aquí.
+                </p>
+            </a>
+        </li>
+
+    </ul>
+
+</main>
+
+<footer class="site-footer">
+    <p>&copy; 2026 Tu Nombre &middot; alojado en <a href="https://pages.github.com" target="_blank">GitHub Pages</a></p>
+</footer>
+
+</body>
+</html>

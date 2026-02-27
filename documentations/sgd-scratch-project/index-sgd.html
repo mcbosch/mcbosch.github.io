@@ -21,13 +21,85 @@
         <p>In this documentation we'll go through the repository structure, and the methods of the python classes we bulid. If you find any mistake, don't hesitate in contribuiting with the projects.</p>
 
         <h3>Structure</h3>
-       <p> We have 3 main python classes: <strong>LinearLayers</strong>, <strong>Sequence</strong>, and <strong>NeuralNetworks</strong>. The two first python-objects are the important ones; the third is a Sequence with a training function. </p>
+       <p> We have 3 main python classes: <span class="code-inline">LinearLayers</span>, <span class="code-inline">Sequence</span>, and <span class="code-inline">NeuralNetworks</span>. The two first python-objects are the important ones; the third is a Sequence with a training function. </p>
 
         <h4 style="text-align:center">LinearLayer</h4>
-        <p></p>
+        <p>A <span class="code-inline">LinearLayer</span> is a mathematical function that goes from an euclidean space of dimension <span class="code-inline">n_in</span> to an euclidean space of dimension <span class="code-inline">n_out</span>. It's the composition of a linear transformation with a non-linear activation function.</p>
         <div class="code">
-            <p>ll = LinearLayer(10,20,activation="ReLU")</p>
+            <pre>
+l = LinearLayer(n_cels_in = 2,
+                n_cels_out = 4,
+                bias = True,
+                activation="ReLU")
+print(l)
+>>> <span style="color:purple">2 -- Fully Conected --> 4 -->  ReLU</span></pre>
         </div>
+        <p>There are three options of activation functions: ReLU, Sigmoid, and Softmax. The Linear Layer has three methods:</p>
+        <div>
+            <table class="table-python-functions">
+                <thead>
+                    <tr><th colspan="3">Linear Layer Methods</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>method</th>
+                        <th>arguments</th>
+                        <th>description</th>
+                    </tr>
+                    <tr>
+                        <td class="code-inline">l.forward()</td>
+                        <td><ul><li><span class="code-inline">input</span></li></ul></td>
+                        <td>Makes a forward run of la layer and stores the value of the neurons</td>
+                    </tr>
+                    <tr>
+                        <td class="code-inline">l.backpropagation()</td>
+                        <td><ul>
+                            <li><span class="code-inline">d</span>: error to backpropagate</li>
+                            <li>first_delta_compute: bool that indicates if the error to backpropagate is computed from the activated neurons or non-activated neurons.</li></ul></td>
+                        <td>It backpropagates the error and stores the error of the neurons in l.cache.</td>
+                        </tr>
+                    <tr>
+                        <td class="code-inline">l.updateparameters()</td>
+                        <td><ul>
+                            <li><span class="code-inline">learning_rate</span>: step of grad descendent</li>
+                            <li><span class="code-inline">beta_1</span>: parameter of the first momentum ADAM</li>
+                            <li><span class="code-inline">beta_2</span>: second parameter of the second momentum ADAM</li>
+                            <li><span class="code-inline">m0</span>: first momentum ADAM</li>
+                            <li><span class="code-inline">m1</span>: second momentum ADAM</li>
+                            <li><span class="code-inline">t</span>: counter of updates</li>
+                            <li><span class="code-inline">adam</span>: bool to indicate if we use ADAM to update</li>
+                        </ul></td>
+                        <td>Updates the parameters using grad descendent with ADAM (if activated) using the error of the neurons in l.cache.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p>N.B. in a future update I'll made a more visual table with css and not html table.</p>
+        <h4 style="text-align:center">Sequence</h4>
+        <p>A <span class="code-inline">Sequence</span> is a bunch of ordered layers connected. It's simply a list of layers with some methods. We can see an example on how to build a sequence in the following code:</p>
+        <div class="code">
+            <pre>
+l1 = LinearLayer(2,4,activation="ReLU")
+l2 = LinearLayer(4,6,activation="ReLU")
+l3 = LinearLayer(6,2,activation="ReLU")
+seq = Sequence([l1, l2, l3])
+
+print(len(seq))
+>>><span style="color:purple"> 3</span>
+
+print(seq[1])
+>>><span style="color:purple"> 4 -- Fully Connected --> 6 --> ReLU</span>
+
+Sequence([LinearLayer(2,2),LinearLayer(3,2)])
+>>><span style="color:red">ValueError: Incompatible layer dimensions</span></pre></div>
+        <p>We can understand a Sequence as a Layer, so it has the same methods but runing over each layer in order.  </p>
+        <div class="pyclass-methods-table">
+            <div class="header-row">
+                
+            </div>
+        </div>
+    
+    
     </main>
     <footer>
         <ul class="links-footer">

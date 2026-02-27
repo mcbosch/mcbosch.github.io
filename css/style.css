@@ -1,6 +1,6 @@
 body {
   background-color: white;
-  font-family: courier;
+  font-family:"Georgia" ;
   font-size:14px;
   padding:10px;
 }
@@ -131,7 +131,7 @@ footer ul {
 }
 
 .code {
-  font-family:courier;
+  font-family:'Lucida Console';
   font-size:12px;
   color:darkred;
   background-color: rgba(228, 222, 222, 0.677);
@@ -139,3 +139,23 @@ footer ul {
   border:2px solid gray;
   border-radius:10px;
 }
+
+.code-inline {
+  font-family:'Lucida Console';
+  color:purple;
+}
+
+.table-python-functions {
+  padding:10px;
+  border: 2px solid gray;
+  border-radius:10px; 
+}
+
+.table-python-functions ul {
+  list-style-type: none;
+}
+
+.table-python-functions ul li {
+  margin-top:10px;
+}
+

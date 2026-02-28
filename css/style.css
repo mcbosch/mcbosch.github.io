@@ -98,33 +98,36 @@ footer {
  max-width: 800px;
  background-color:#f9f9f9;
  padding:3px;
- text-align:center;
  float:center;
+ padding:5px;
  margin:auto;
  border-top: 3px solid gray;
 }
 
-footer ul {
-  list-style-type: none;
-}
-
-.link-footer-item:link {
-  color:gray;
-}
-
-.link-footer-item:hover {
-  color: orange;
-  transition: color 0.5s ease;
+.footer-address {
+  text-align:center;
+  padding:10px;
+  float:center;
+  color:#2c3e50;
 }
 
 .documentation-card {
   border:2px solid gray;
   border-radius: 10px;
-  display: inline-block;
+  display: block;
   padding: 10px;
   margin:auto;
 }
 
+.description-documentation-card {
+  width:60%;
+  display: inline-block;
+}
+
+.img-documentation-card {
+ width:30%;
+ display: inline-block;
+}
 .documentation-card:hover {
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
   transition:box-shadow 0.5s ease;
@@ -149,6 +152,7 @@ footer ul {
   padding:10px;
   border: 2px solid gray;
   border-radius:10px; 
+  margin:auto;
 }
 
 .table-python-functions ul {

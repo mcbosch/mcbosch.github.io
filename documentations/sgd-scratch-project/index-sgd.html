@@ -93,19 +93,149 @@ print(seq[1])
 Sequence([LinearLayer(2,2),LinearLayer(3,2)])
 >>><span style="color:red">ValueError: Incompatible layer dimensions</span></pre></div>
         <p>We can understand a Sequence as a Layer, so it has the same methods but runing over each layer in order.  </p>
-        <div class="pyclass-methods-table">
-            <div class="header-row">
-                
-            </div>
-        </div>
-    
-    
+        <table class="table-python-functions">
+            <thead>
+                <tr>
+                    <th colspan="3">Sequence Methods</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>method</th>
+                    <th>parameters</th>
+                    <th>description</th>
+                </tr>
+                <tr>
+                    <td><span class="code-inline">seq.forward()</span></td>
+                    <td><ul>
+                        <li><span class="code-inline">input</span></li>
+                    </ul></td>
+                    <td>
+                        Runs the input over all the layers in order.
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="code-inline">seq.add()</span></td>
+                    <td><ul>
+                        <li><span class="code-inline">
+                            layer
+                        </span></li>
+                    </ul></td>
+                    <td>
+                        Adds a layer at the final of the sequence.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="code-inline">seq.backpropagate()</span>
+                    </td>
+                    <td>
+                        <ul>
+                            <li><span class="code-inline">delta</span>: error to backpropagate</li>
+                            <li><span class="code-inline">step</span>: learning rate of grad. descend</li>
+                            <li><span class="code-inline">beta_1</span>: parameter for first ADAM momentum</li>
+                            <li><span class="code-inline">beta_2</span>: parameter for second ADAM momentum</li>
+                            <li><span class="code-inline">momentums</span>: list of tuples of momentums for each layer.</li>
+                            <li><span class="code-inline">t</span>: counter of updates for ADAM bias correction</li>
+                            <li><span class="code-inline">update_parameters</span>: bool, if true updates parameters</li>
+                            <li><span class="code-inline">adam</span>: bool, if true updates parameters using adam</li>
+                            <li><span class="code-inline">first_delta_computed</span>: bool, indicates if the error to backpropagate is in the non-activated neurons (True value) or not</li>
+                        </ul>
+                    </td>
+                    <td>
+                        Backpropagates the error and stores the error of the neurons in the cache of each layer. If update parameters is set as true, it updates the parameters.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <p>The <span class="code-inline">Sequence</span> object is useful to work with concatenation of layers for any purpouse. It can also work as a NN, but it doesn't have methods to work with data and train/test. I built it this way to have a more general class for any purpose, and build an other NN class.</p>
+
+        <h4 style="text-align:center">NeuralNetwork</h4>
+        <p> A <span class="code-inline">NeuralNetwork</span> is a sequence of layers provided with training and test methods; and other methods to make work the training and test methods. We can see in the following code an example of how to use it:</p>
+        <div class="code">
+<pre>
+N = NeuralNetwork([LinearLayer(2,4),
+                  LinearLayer(4,2, activation="Softmax")])
+
+print(N)
+>>><span style="color:purple"> Neural NeuralNetwork
+----------------
+Number of Hidden Layers: 1
+Pass of Information:
+    2 -- Fully Connected --> 4 --> ReLU
+    4 -- Fully Connected --> 2 --> Softmax
+----------------</span>
+</pre></div>
+<table class="table-python-functions">
+    <thead>
+        <tr>
+            <th colspan="3">NeuralNetwork Methods</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th>method</th>
+            <th>parameters</th>
+            <th>description</th>
+        </tr>
+        <tr><td><span class="code-inline">N.forward()</span></td>
+        <td><ul>
+            <li><span class="code-inline">input</span></li>
+        </ul></td>
+    <td>Runs over all the layers in order</td></tr>
+    <tr><td><span class="code-inline">N.train()</span></td>
+    <td><ul>
+        <li><span class="code-inline">data</span>: dataset where we want to train the model.</li>
+        <li><span class="code-inline">epochs</span>Number of epochs to train over the dataset.</li>
+        <li><span class="code-inline">learning_rate</span>: step of gradient descendent.</li>
+        <li><span class="code-inline">batch_size</span>: size of the batches.</li>
+        <li><span class="code-inline">beta_1</span>: ADAM parameter for first momentum</li>
+        <li><span class="code-inline">beta_2</span>: ADAM parameter for second momentum</li>
+        <li><span class="code-inline">loss</span>: loss function which is going to be optimizied.</li>
+        <li><span class="code-inline">adam</span>: bool</li>
+        <li><span class="code-inline">data_val</span>: dataset of validation.</li>
+    </ul></td>
+<td>It trains a model using SGD with batches of the size indicated, and with the indicated loss. Also, it uses a data_val if there is given.</td></tr>
+    <tr>
+        <td><span class="code-inline">N.test()</span></td>
+        <td><ul>
+            <li><span class="code-inline">data</span>: data for the test</li>
+            <li><span class="code-inline">loss</span>: function to use to compute the loss.</li>
+        </ul></td>
+        <td>It computes the loss and acc of the dataset test.</td>
+    </tr>
+    <tr>
+        <td><span class="code-inline">to_one_hot</span></td>
+        <td><ul>
+            <span class="code-inline">labels</span>
+        </ul></td>
+        <td>Given a batch of labels it return a batch of vectors with zeros and a one in the label positon.</td>
+    </tr>
+    </tbody>
+
+</table>
+
+<h4>Future Improvements</h4>
+<p>This python class is workable but could be improved in  some ways. One that brought me problems is not having a parameter class to be able to automatically count how many times the parameter has been updated for the ADAM correction bias. Also, the code could be more clean grouping some variables.</p>
+
+<p>I may improve this class, but for now my objective was to learn in having a good repository, a clean documentation, and make a workable class to make a VAE from scratch.</p>
+
     </main>
+
     <footer>
-        <ul class="links-footer">
-            <li><a class ="link-footer-item" href="https://github.com/mcbosch" target="_blank">github/mcbosch</a></li>
-            <li><a class ="link-footer-item" href="https://www.linkedin.com/in/melcion-c-72bb96333/" target="_blank">LinkedIn</a></li>
-        </ul>
-        <p>mcbosch blog - hosted by GitHub Pages</p>    
+        <table class="footer-address">
+            <thead></thead>
+            <tbody>
+                <tr> 
+                    <td><img src="../../img/Github_black.png" alt="GitHub Icon" width="20px"/></td>
+                    <td><a href="https://github.com/mcbosch">github/mcbosch</a></td>
+                </tr>
+                <tr> 
+                    <td><img src="../../img/LinkedIN_black.png" alt="LinkedIN Icon" width="20px"/></td>
+                    <td><a href="https://www.linkedin.com/feed/">LinkedIn</a></td>
+                </tr>
+            </tbody>
+        </table> 
+        <p>Page hosted by GitHub Pages</p>
     </footer>
 </body>

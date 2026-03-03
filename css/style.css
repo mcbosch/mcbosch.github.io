@@ -111,6 +111,23 @@ footer {
   color:#2c3e50;
 }
 
+.blog-card {
+  border-bottom: 2px solid gray;
+  width: 70%;
+  margin:auto;
+  margin-top: 20px;
+}
+
+.blog-card-title h2 {
+  font-size: 14px;
+  color: rgb(23, 23, 23);
+  text-align: left;
+  padding-left: 20px; 
+}
+
+.blog-card-description {
+  text-align: justify;
+}
 .documentation-card {
   border:2px solid gray;
   border-radius: 10px;

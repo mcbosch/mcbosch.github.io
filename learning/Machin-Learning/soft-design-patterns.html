@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<link rel="stylesheet" href="/css/style.css">
+<meta name="viewport" content="width-device-width, initial-scale=1.0" />
+<title>melcion</title>
+</head>
+ 
+<body>
+    <header class="container">
+    <h1>mcbosch</h1>
+    <nav class="navbar">
+        <ul class="navlinks">
+            <li><a href='../../index.html'>Home</a></li>
+            <li><a href='../../documentations/index-documentations.html'>Projects</a></li>
+            <li><a href='../../blog/index-blog.html'>Blog</a></li>
+            <li><a href='../index-learning.html'>Learning Pathways</a></li>
+        </ul>
+    </nav>
+    </header>  
+    <main>
+    <h2>Software Design Pattens</h2>
+
+    <h3>What are Design Patterns and Why to Use it</h3>
+
+    <p>Before we dive in, let me explain why I structure everything around Design Patterns. An MVP is a Minimum Viable Product. When we work in bigger projects we usually want to <strong>first build an MVP</strong>, and then decide if we want to continue that way and improve it. When we create an MVP with clean code and Design Patterns, we are creating a solid base to build on. Start with a working version, and then add more strategies, more methods, more models. It's going to be easier to grow your project. </p>
+    
+    <p>But more importantly: you are creating readable code. An easy to contribute project, so other developers can understand what you did and why. In production, you won't work alone. The person reading your code in 6 months might be you, and you will thank yourself for the structure.</p>
+
+
+   <p class = "definition"> <strong>Definition (<a href="https://en.wikipedia.org/wiki/Software_design_pattern"> Design Pattern </a>):</strong> A reusable solution to a commonly occurring problem in software design. It's a template for solving a particular type of problem that can be used across different programming languages and contexts.</p>
+
+    <p>There are many types of patterns. In this guide we'll use three: Factory, Strategy, and Template Method. Each one solves a specific problem I am founding in my ML projects.</p>
+
+    <h3>Patterns for Loading Data</h3>
+
+    <p>Get the Data. Not as easy as it seems.</p>
+    <p>To ingest data you can get a zip file and in your Jupyter notebook, unzip and read csv. But this is not enough. We want to make a reproducible code, scalable, understandable and easy to maintain. If you are working in a Machine Learning project for production, it's not enough to train a model for one set of data. You are going to have updates, new data formats, mistakes, schema changes, etc. So you want a script to load data that can manage all of that. To do this we use something known as a Factory Design Pattern.</p>
+
+    <p>Imagine you want to print copies of a document. When printers didn't exist, they used a printing press where you had to place each letter by hand and then you could make copies. When you wanted to copy another document, you had to change all the letters. With modern printers, you can put any document in, and you get your copy out. You don't care about the internal process, you just feed it and it works.</p>
+
+    <p>This is the idea of a Factory: an object that can process different types of inputs for your problem and return you the object you need. I am being repetitive with the word object because we will use this for object oriented programming.</p>
+
+    <p class="definition"><strong>Definition (<a href="https://en.wikipedia.org/wiki/Factory_method_patternv">Factory Design Pattern</a>)</strong>: In object oriented programming, a Factory Design Pattern uses factory methods to deal with the problem of creating objects without having to specify their exact class. The factory decides which concrete class to instantiate based on the input it receives.</p>
+
+    <p>How to Use Factory Design Pattern to Load Data
+    We have to create a reusable solution for the problem of reading data and returning an object with it. To do that, we create a Factory that returns an object capable of processing the data type we need.
+    The structure is:</p>
+<p><ol>
+<li>Define an abstract class — this is the contract that tells other developers what the pattern should follow</li>
+<li>Define concrete implementations — one per data type you need to support</li>
+<li>Define the Factory — it decides which implementation to use</li></ol></p>
+<div class="code">
+<pre>
+from abc import ABC, abstractmethod
+import pandas as pd
+
+
+# 1. The contract: any data loader must implement load_data
+class DataLoader(ABC):
+    @abstractmethod
+    def load_data(self, path: str) -> pd.DataFrame:
+        """Load data from path and return a DataFrame.
+        
+        We return DataFrames here, but in your project it could be
+        a PyG Data object, a numpy array, or whatever you work with.
+        """
+        pass
+
+
+# 2. Concrete implementations: one per data source
+class CSVLoader(DataLoader):
+    def load_data(self, path: str) -> pd.DataFrame:
+        try:
+            return pd.read_csv(path)
+        except FileNotFoundError:
+            raise FileNotFoundError(f"CSV file not found: {path}")
+        except pd.errors.ParserError as e:
+            raise ValueError(f"Error parsing CSV: {e}")
+
+
+class JSONLoader(DataLoader):
+    def load_data(self, path: str) -> pd.DataFrame:
+        try:
+            return pd.read_json(path)
+        except FileNotFoundError:
+            raise FileNotFoundError(f"JSON file not found: {path}")
+        except ValueError as e:
+            raise ValueError(f"Error parsing JSON: {e}")
+
+
+class ZipCSVLoader(DataLoader):
+    def load_data(self, path: str) -> pd.DataFrame:
+        import zipfile, io
+        try:
+            with zipfile.ZipFile(path, 'r') as z:
+                csv_files = [f for f in z.namelist() if f.endswith('.csv')]
+                if not csv_files:
+                    raise ValueError("No CSV files found inside the zip")
+                with z.open(csv_files[0]) as f:
+                    return pd.read_csv(io.TextIOWrapper(f))
+        except zipfile.BadZipFile:
+            raise ValueError(f"Bad zip file: {path}")
+
+
+# 3. The Factory: decides which loader to use
+class DataLoaderFactory:
+    """Given a file path, returns the right loader."""
+    
+    _loaders = {
+        '.csv': CSVLoader,
+        '.json': JSONLoader,
+        '.zip': ZipCSVLoader,
+    }
+    
+    @classmethod
+    def create(cls, path: str) -> DataLoader:
+        import os
+        ext = os.path.splitext(path)[1].lower()
+        loader_class = cls._loaders.get(ext)
+        if loader_class is None:
+            supported = ', '.join(cls._loaders.keys())
+            raise ValueError(f"Unsupported format '{ext}'. Supported: {supported}")
+        return loader_class()
+
+
+if __name__ == "__main__":
+    path = "data/transactions.csv"
+    loader = DataLoaderFactory.create(path)
+    df = loader.load_data(path)
+    print(f"Loaded {len(df)} rows")
+</pre>
+</div>
+<p>Note that adding new format is adding one class, not searching the correct line of code to change. Also it makes clear how a class should look to other devs.</p>
+
+<h3>Strategy Design Patterns and Template Method Patterns</h3>
+<p>When we work in ML projects, after we load the data, we start making actions, as getting info of the dataframe, looking for missing values, visualize them, etc. Normally, we have a repetitive behaivour of actions, and sometimes an step by step of actions changing a few things. In these cases we use Strategy and Template Method Patterns.</p>
+
+<p>Instead of writing each analysis as a loose function, we build a structure that groups different algorithms and lets us select which one to run. This is the Strategy Design Pattern.</p>
+
+<p class="definition"><strong>Definition <a href="https://en.wikipedia.org/wiki/Strategy_pattern">(Strategy Design Pattern)</a></strong> A behavioral design pattern that enables selecting an algorithm at runtime. Instead of implementing a single algorithm directly, code receives runtime instructions as to which in a family of algorithms to use.</p>
+
+<p>Example: Structuring your EDA with Strategies</p>
+<div class="code">
+ <pre>
+from abc import ABC, abstractmethod
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+
+# The contract: every analysis strategy receives a DataFrame
+class AnalysisStrategy(ABC):
+    @abstractmethod
+    def analyze(self, data: pd.DataFrame):
+        """Perform a specific type of inspection on the data."""
+        pass
+
+
+# Concrete strategies: each one is a self-contained analysis
+class BasicInfoStrategy(AnalysisStrategy):
+    def analyze(self, data: pd.DataFrame):
+        print("=== Basic Info ===")
+        print(f"Shape: {data.shape}")
+        print(f"\nDtypes:\n{data.dtypes}")
+        print(f"\nMissing values:\n{data.isnull().sum()}")
+
+
+class DescriptiveStatsStrategy(AnalysisStrategy):
+    def analyze(self, data: pd.DataFrame):
+        print("=== Descriptive Statistics ===")
+        print(data.describe())
+
+
+class CorrelationStrategy(AnalysisStrategy):
+    def analyze(self, data: pd.DataFrame):
+        print("=== Correlation Matrix ===")
+        numeric = data.select_dtypes(include='number')
+        corr = numeric.corr()
+        plt.figure(figsize=(10, 8))
+        sns.heatmap(corr, annot=True, cmap='coolwarm', center=0)
+        plt.title("Correlation Matrix")
+        plt.tight_layout()
+        plt.show()
+
+
+class DistributionStrategy(AnalysisStrategy):
+    def analyze(self, data: pd.DataFrame):
+        print("=== Distributions of Numeric Variables ===")
+        numeric_cols = data.select_dtypes(include='number').columns
+        for col in numeric_cols:
+            fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+            data[col].hist(ax=axes[0], bins=30)
+            axes[0].set_title(f'{col} — Histogram')
+            data.boxplot(column=col, ax=axes[1])
+            axes[1].set_title(f'{col} — Boxplot')
+            plt.tight_layout()
+            plt.show()
+
+
+# The context: holds a strategy and executes it
+class DataAnalyzer:
+    def __init__(self, strategy: AnalysisStrategy):
+        self._strategy = strategy
+    
+    def set_strategy(self, strategy: AnalysisStrategy):
+        """Change strategy at runtime."""
+        self._strategy = strategy
+    
+    def run(self, data: pd.DataFrame):
+        self._strategy.analyze(data)
+ </pre>   
+</div>
+<p>Now in your notebook, the EDA is clean and focused on interpretation, not code:</p>
+<div class="code">
+<pre>
+analyzer = DataAnalyzer(BasicInfoStrategy())
+analyzer.run(df)
+
+# Something looks off in the distributions? Switch strategy:
+analyzer.set_strategy(DistributionStrategy())
+analyzer.run(df)
+
+# Check if variables are correlated:
+analyzer.set_strategy(CorrelationStrategy())
+analyzer.run(df)
+</pre>
+</div>
+<p>We've been talking about patterns that let you swap algorithms. The Template Method Pattern solves a different problem: when you have a fixed sequence of steps, but some of those steps change depending on the situation.</p>
+
+<p class="definition"> <strong>Definition (<a href="https://en.wikipedia.org/wiki/Template_method_pattern">Template Method Pattern</a>)</strong>: A method in a superclass that defines the skeleton of an operation as a sequence of high-level steps. The steps themselves are implemented by subclasses, so the structure stays the same but the details can vary.</p>
+
+<p>Example: dealing with missing values with a Template Method</p>
+
+<p>Treating missing values is an important task in EDA and we have to pay attention. The first thing we want to do is describing the pattern of missing data. Where are they located? How many do we have? Are missing values of different variables related? Are they random? The thing is, depending on the dataset and how missing values are structured, you will deal with them in one way or another. But you always follow the same steps:</p>
+
+<p>
+    <ol>
+        <li>Find and count them — where and how many</li>
+<li>Visualize and analyze the pattern — are they random or structured?</li>
+<li>Deal with them — impute, drop, or flag</li>
+    </ol>
+    The last one depends on the the results of the first two. Thus, I don't make a method for it.
+</p>
+<div class="code">
+<pre>
+from abc import ABC, abstractmethod
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+class MissingValAnalTemplate(ABC):
+    
+    def analyze(self, df: pd.DataFrame):
+        """
+        Performs a Mising Value Analysis, identifying the MissVal and visualizing it.
+
+        Parameters
+        ----------
+            df: dataframe with all the data
+        Returns
+        -------
+            None, Runs an algorithm and prints result.
+        """
+        self.identify_missval(df)
+        self.visualize_missval(df)
+
+    @abstractmethod
+    def identify_missval(self, df: pd.DataFrame):
+        """
+        Parameters
+        ----------
+            df: pd.DataFrame (data)
+        Returns
+        -------
+            None; Executes action
+        """
+        pass
+
+    @abstractmethod
+    def visualize_missval(self, df: pd.DataFrame):
+        """
+        Parameters
+        ----------
+            df: pd.DataFrame (data)
+        Returns
+        -------
+            None; Executes action
+        """
+        pass
+
+class SimpleMissValAnal(MissingValAnalTemplate):
+    def identify_missval(self, df:pd.DataFrame):
+        """
+        Prints the count of missing values for those variables that have
+        
+        """
+        print("\nMissing Values Count > 0")
+        miss_val = df.isnull().sum()
+        print(miss_val[miss_val > 0])
+
+
+    def visualize_missval(self, df):
+        """
+        Plots a heat matrix to visualize where we have missing values
+        Parameters
+        ----------
+        """
+        print("\nPlotting Heatmap of Missing Values.")
+        plt.figure(figsize=(12,8))
+        sns.heatmap(df.isnull(), cbar=False, cmap='viridis')
+        plt.title("Missing Values HeatMap")
+        plt.tight_layout()
+        plt.show()
+
+class OnlyMissValAnal(MissingValAnalTemplate):
+    def identify_missval(self, df):
+        """
+        Prints the percentage of missing values for those variables that have
+        """
+        rows = df.shape[0]
+        print("\nMissing Values Count %")
+        miss_val = df.isnull().sum()
+        n_miss_val = df.columns[miss_val>0]
+        miss_val = round(100*miss_val/rows,3)
+        print(miss_val[miss_val > 0])
+        print(f"\nNumber of Vars with missing values: {n_miss_val}")
+    
+    def visualize_missval(self, df):
+        """
+        Plots a heat matrix to visualize where we have missing values
+        Parameters
+        ----------
+        """
+        print("\nPlotting Heatmap of Missing Values.")
+        plt.figure(figsize=(12,8))
+        sns.heatmap(df[df.columns[df.isnull().sum() > 0]].isnull(), cbar=False, cmap='viridis')
+        plt.title("Missing Values HeatMap")
+        plt.tight_layout()
+        plt.show()
+
+
+if __name__ == '__main__':
+    file_path = 'dataframe.csv'
+    df = pd.read_csv(file_path)
+    missing_val_analyzer = OnlyMissValAnal()
+    missing_val_analyzer.analyze(df)
+</pre>
+</div>
+<p>There are other software Design Patterns. See this <a href = "https://en.wikipedia.org/wiki/Software_design_pattern">link</a> to look some of them.</p>
+    </main>
+    <footer>
+        <table class="footer-address">
+            <thead></thead>
+            <tbody>
+                <tr> 
+                    <td><img src='../../img/Github_black.png' alt="GitHub Icon" width="20px"/></td>
+                    <td><a href="https://github.com/mcbosch">github/mcbosch</a></td>
+                </tr>
+                <tr> 
+                    <td><img src='../../img/LinkedIN_black.png' alt="LinkedIN Icon" width="20px"/></td>
+                    <td><a href="https://www.linkedin.com/feed/">LinkedIn</a></td>
+                </tr>
+            </tbody>
+        </table> 
+        <p>Page hosted by GitHub Pages</p>
+    </footer>
+
+</body>
+</html>
